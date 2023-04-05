@@ -9,27 +9,29 @@ import locale
 
 st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
 
-# Define custom CSS styles
-custom_styles = """
-<style>
-body {
-    color: #EAE3EC; /* set text color to white */
-    background-color: #59058D; /* set background color to purple */
-}
+# # Define custom CSS styles
+# custom_styles = """
+# <style>
+# body {
+#     color: #EAE3EC; /* set text color to white */
+#     background-color: #59058D; /* set background color to purple */
+# }
 
-/* Set secondary color for text and buttons */
-.stButton button,
-.stTextInput input,
-.stNumberInput input,
-.stSelectbox option {
-    color: #EAE3EC !important;
-    background-color: #6E6E70 !important;
-}
-</style>
-"""
+# /* Set secondary color for text and buttons */
+# .stButton button,
+# .stTextInput input,
+# .stNumberInput input,
+# .stSelectbox option {
+#     color: #EAE3EC !important;
+#     background-color: #6E6E70 !important;
+# }
+# </style>
+# """
 
-# Apply custom styles to Streamlit app
-st.markdown(custom_styles, unsafe_allow_html=True)
+# # Apply custom styles to Streamlit app
+# st.markdown(custom_styles, unsafe_allow_html=True)
+
+locale.setlocale(locale.LC_ALL, '')
 image = Image.open('avonwhite.png')
 st.image(image, use_column_width=False)
 
@@ -93,6 +95,12 @@ def display_member_utilization():
     policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Expiry'].values[0])
 
     try:
+        member_pa_value = utilization_data.loc[
+            (utilization_data['MemberNo'] == memberid) &
+            (utilization_data['EncounterDate'] >= policy_start_date) &
+            (utilization_data['EncounterDate'] <= policy_end_date),
+            'ApprovedPAAmount'].sum()
+        member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
         membername = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Name'].values[0]
         client = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'ClientName'].values[0]
         plan = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'PlanType'].values[0]
@@ -113,6 +121,7 @@ def display_member_utilization():
         st.metric(label = 'Enrollee Name', value = membername)
         st.metric(label = 'Enrollee Client', value = client)
         st.metric(label = 'Enrollee Plan', value = plan)
+        st.metric(label = 'Total Utilization Within Current Policy', value=member_pa_value)
 
         col3, col4 = st.columns(2)
         col3.metric(label = 'Enrollee Age', value = memberage)
