@@ -9,3 +9,5 @@ font="serif"
 [client]
 showErrorDetails = false
 
+[server]
+headless = true
