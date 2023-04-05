@@ -7,7 +7,7 @@ textColor="#eae3ec"
 font="serif"
 
 [client]
-showErrorDetails = false
+showErrorDetails = true
 
 [server]
 headless = true

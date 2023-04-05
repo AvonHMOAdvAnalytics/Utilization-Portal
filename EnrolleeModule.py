@@ -17,7 +17,7 @@ st.sidebar.title('Navigation')
 options = st.sidebar.radio('Module', options=['Home Page', 'Enrollee Utilization Summary', 'Enrollee Plan Benefit Limit'])
 
 
-@st.experimental_memo(ttl = dt.timedelta(hours=24))
+@st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql(query):
     conn = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
