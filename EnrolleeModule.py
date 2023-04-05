@@ -9,27 +9,6 @@ import locale
 
 st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
 
-# # Define custom CSS styles
-# custom_styles = """
-# <style>
-# body {
-#     color: #EAE3EC; /* set text color to white */
-#     background-color: #59058D; /* set background color to purple */
-# }
-
-# /* Set secondary color for text and buttons */
-# .stButton button,
-# .stTextInput input,
-# .stNumberInput input,
-# .stSelectbox option {
-#     color: #EAE3EC !important;
-#     background-color: #6E6E70 !important;
-# }
-# </style>
-# """
-
-# # Apply custom styles to Streamlit app
-# st.markdown(custom_styles, unsafe_allow_html=True)
 
 locale.setlocale(locale.LC_ALL, 'en_US')
 image = Image.open('avonwhite.png')
@@ -80,12 +59,12 @@ limit_df = pd.read_csv('Benefit_Limits.csv')
 st.session_state['utilization_data'] = utilization_data
 
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def display_member_utilization():
     try:
         memberid = st.sidebar.text_input('Enrollee Member ID')
         memberid = int(memberid)
-        submit = st.sidebar.button(label='Submit')
+        st.sidebar.button(label='Submit')
     except ValueError:
         st.write('Enter a valid integer for Member No')
         return
