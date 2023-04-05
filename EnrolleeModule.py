@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from telnetlib import ENCRYPT
 import pyodbc
 from PIL import Image
 import datetime as dt
