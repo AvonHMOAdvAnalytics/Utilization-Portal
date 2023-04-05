@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from PIL import Image 
 import locale
 
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, 'en_US')
 image = Image.open('utilization_image.png')
 st.image(image)
 

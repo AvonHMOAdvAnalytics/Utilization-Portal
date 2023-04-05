@@ -31,7 +31,7 @@ st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sid
 # # Apply custom styles to Streamlit app
 # st.markdown(custom_styles, unsafe_allow_html=True)
 
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, 'en_US')
 image = Image.open('avonwhite.png')
 st.image(image, use_column_width=False)
 
