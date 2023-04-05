@@ -79,6 +79,8 @@ limit_df = pd.read_csv('Benefit_Limits.csv')
 
 st.session_state['utilization_data'] = utilization_data
 
+
+@st.cache
 def display_member_utilization():
     try:
         memberid = st.sidebar.text_input('Enrollee Member ID')

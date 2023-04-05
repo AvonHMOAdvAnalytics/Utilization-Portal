@@ -12,6 +12,8 @@ st.image(image)
 st.title('Hospital Utilization Data')
 utilization_data = st.session_state['utilization_data']
 
+
+@st.cache
 def display_utilization_data():
     try:
         providerno = st.sidebar.text_input('Provider Number')
