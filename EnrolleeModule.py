@@ -17,7 +17,7 @@ st.sidebar.title('Navigation')
 options = st.sidebar.radio('Module', options=['Home Page', 'Enrollee Utilization Summary', 'Enrollee Plan Benefit Limit'])
 
 
-@st.experimental_memo(ttl = dt.timedelta(hours=24))
+@st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql(query):
     conn = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
@@ -58,7 +58,6 @@ limit_df = pd.read_csv('Benefit_Limits.csv')
 st.session_state['utilization_data'] = utilization_data
 
 
-@st.cache(suppress_st_warning=True)
 def display_member_utilization():
     try:
         memberid = st.sidebar.text_input('Enrollee Member ID')

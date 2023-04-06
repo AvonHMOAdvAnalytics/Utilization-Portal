@@ -12,7 +12,7 @@ st.image(image)
 st.title('Client Utilization Data')
 utilization_data = st.session_state['utilization_data']
 
-@st.cache(suppress_st_warning=True)
+
 def display_utilization_data():
     try:
         policyno = st.sidebar.text_input('Client Policy Number')
