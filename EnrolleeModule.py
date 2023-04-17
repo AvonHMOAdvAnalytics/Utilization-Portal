@@ -16,23 +16,6 @@ st.image(image, use_column_width=False)
 st.sidebar.title('Navigation')
 options = st.sidebar.radio('Module', options=['Home Page', 'Enrollee Utilization Summary', 'Enrollee Plan Benefit Limit'])
 
-
-@st.cache_data(ttl = dt.timedelta(hours=24))
-def get_data_from_sql(query):
-    conn = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        +st.secrets['server']
-        +';DATABASE='
-        +st.secrets['database']
-        +';UID='
-        +st.secrets['username']
-        +';PWD='
-        +st.secrets['password']
-        )
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
-
 query = 'SELECT PolicyNo\
             ,ClientName\
             ,[Policy Inception]\
@@ -48,11 +31,33 @@ query = 'SELECT PolicyNo\
             ,Email\
             ,MobileNo\
              from [dbo].[tbl_MemberMasterView]'
-active_enrollees = get_data_from_sql(query=query)
 
 query1 = 'SELECT * from vw_utilization_data'
-utilization_data = get_data_from_sql(query=query1)
-utilization_data['EncounterDate'] = pd.to_datetime(utilization_data['EncounterDate'])
+
+
+
+@st.cache_data(ttl = dt.timedelta(hours=24))
+def get_data_from_sql():
+    conn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        +st.secrets['server']
+        +';DATABASE='
+        +st.secrets['database']
+        +';UID='
+        +st.secrets['username']
+        +';PWD='
+        +st.secrets['password']
+        )
+    active_enrolees = pd.read_sql(query, conn)
+    utilization_data = pd.read_sql(query1, conn)
+    utilization_data['EncounterDate'] = pd.to_datetime(utilization_data['EncounterDate'])
+    conn.close()
+    return active_enrolees, utilization_data
+
+active_enrollees, utilization_data = get_data_from_sql()
+#active_enrollees = get_data_from_sql(query=query)
+#utilization_data = get_data_from_sql(query=query1)
+
 limit_df = pd.read_csv('Benefit_Limits.csv')
 
 st.session_state['utilization_data'] = utilization_data
