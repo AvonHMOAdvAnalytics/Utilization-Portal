@@ -60,45 +60,45 @@ active_enrollees, utilization_data = get_data_from_sql()
 
 limit_df = pd.read_csv('Benefit_Limits.csv')
 
-st.session_state['utilization_data'] = utilization_data
+st.session_state['utilization_data'] = utilization_data.set_index('MemberNo')
 
 
 def display_member_utilization():
-    try:
-        memberid = st.sidebar.text_input('Enrollee Member ID')
-        memberid = int(memberid)
-        st.sidebar.button(label='Submit')
-    except ValueError:
-        st.write('Enter a valid integer for Member No')
+    memberid = st.sidebar.text_input('Enrollee Member ID')
+    st.sidebar.button(label='Submit')
+
+    if not memberid.isdigit():
+        st.write('Enter a valid integer for MemberNo')
         return
     
-        
-    # policy_start_date = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Inception'].values[0]
-    # policy_end_date = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Expiry'].values[0]
-    policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Inception'].values[0])
-    policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Expiry'].values[0])
+    memberid = int(memberid)
 
-    try:
-        member_pa_value = utilization_data.loc[
-            (utilization_data['MemberNo'] == memberid) &
-            (utilization_data['EncounterDate'] >= policy_start_date) &
-            (utilization_data['EncounterDate'] <= policy_end_date),
-            'ApprovedPAAmount'].sum()
-        member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
-        membername = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Name'].values[0]
-        client = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'ClientName'].values[0]
-        plan = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'PlanType'].values[0]
-        membertype = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'MemberType'].values[0]
-        memberage = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'MemberAge'].values[0]
-        member_utilization = utilization_data.loc[
+    if memberid not in active_enrollees['MemberNo'].values:
+        st.write('No data found for the given member number')
+        return
+    
+    policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Inception'].iat[0])
+    policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Policy Expiry'].iat[0])
+
+    
+    member_pa_value = st.session_state[utilization_data].loc[
+        memberid,
+        'ApprovedPAAmount',].loc[
+        policy_start_date:policy_end_date
+        ]
+            
+    member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
+    membername = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'Name'].iat[0]
+    client = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'ClientName'].iat[0]
+    plan = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'PlanType'].iat[0]
+    membertype = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'MemberType'].iat[0]
+    memberage = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'MemberAge'].iat[0]
+    member_utilization = utilization_data.loc[
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date) &
             (utilization_data['MemberNo'] == memberid),
-            ['Hospital', 'EncounterDate', 'Benefits', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
-        ].reset_index(drop=True)
-    except IndexError:
-        st.write('No data found for the given member number')
-        return
+            ['AvonPACode','Hospital', 'EncounterDate', 'Benefits', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+        ].set_index('AvonPACode')
 
     if membername is not None and options == 'Home Page':  
         #col1,col2= st.columns(2)
