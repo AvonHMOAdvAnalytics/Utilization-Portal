@@ -3,9 +3,9 @@ import datetime as dt
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from PIL import Image 
-import locale
+#import locale
 
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+#locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 image = Image.open('utilization_image.png')
 st.image(image)
 
@@ -40,19 +40,19 @@ def display_utilization_data(policy):
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'ApprovedPAAmount'].sum()
-    client_pa_value = '#' + locale.format_string('%d', client_pa_value, grouping=True)
+    #client_pa_value = '#' + locale.format_string('%d', client_pa_value, grouping=True)
     client_pa_count = utilization_data.loc[
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'AvonPACode'].nunique()
-    client_pa_count = locale.format_string('%d', client_pa_count, grouping=True)
+    #client_pa_count = locale.format_string('%d', client_pa_count, grouping=True)
     client_member_count = utilization_data.loc[
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'MemberNo'].nunique()
-    client_member_count = locale.format_string('%d', client_member_count, grouping=True)
+    #client_member_count = locale.format_string('%d', client_member_count, grouping=True)
     client_name = utilization_data.loc[utilization_data['PolicyNo'] == policy, 'Client'].values[0]
     client_data = utilization_data.loc[
             (utilization_data['EncounterDate'] >= start_date) &

@@ -3,14 +3,14 @@ import pandas as pd
 import pyodbc
 from PIL import Image
 import datetime as dt
-import locale
+#import locale
 #import resource
 
 
 st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
 
 
-locale.setlocale(locale.LC_ALL, 'en_US')
+#locale.setlocale(locale.LC_ALL, 'en_US')
 image = Image.open('avonwhite.png')
 st.image(image, use_column_width=False)
 
@@ -103,7 +103,7 @@ def display_member_utilization(mem_id):
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date),
             'ApprovedPAAmount'].sum()        
-    member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
+    #member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
     membername = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Name'].iat[0]
     client = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'ClientName'].iat[0]
     plan = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'PlanType'].iat[0]
