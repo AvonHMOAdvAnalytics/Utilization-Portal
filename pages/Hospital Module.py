@@ -37,19 +37,20 @@ def display_utilization_data(provider):
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'ApprovedPAAmount'].sum()
+    provider_pa_value = '#' + '{:,}'.format(provider_pa_value) 
     #provider_pa_value = '#' + locale.format_string('%d', provider_pa_value, grouping=True)
     provider_pa_count = utilization_data.loc[
             (utilization_data['ProviderNo'] == provider) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'AvonPACode'].nunique()
-    #provider_pa_count = locale.format_string('%d',provider_pa_count,grouping=True)
+    provider_pa_count = '{:,}'.format(provider_pa_count)
     provider_member_count = utilization_data.loc[
             (utilization_data['ProviderNo'] == provider) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'MemberNo'].nunique()
-    #provider_member_count = locale.format_string('%d',provider_member_count,grouping=True)
+    provider_member_count = '{:,}'.format(provider_member_count)
     provider_name = utilization_data.loc[utilization_data['ProviderNo'] == provider, 'Hospital'].values[0]
     provider_data = utilization_data.loc[
                 (utilization_data['EncounterDate'] >= start_date) &
@@ -62,6 +63,7 @@ def display_utilization_data(provider):
         active_enrollees['PrimaryProviderNo'] == provider,
         'MemberNo'
     ].nunique()
+    active_lives = '{:,}'.format(active_lives)
 
     if provider_name is not None and len(provider_data) > 0:  
         st.subheader(provider_name + ' utilization between ' + str(start_date.date()) + ' and ' + str(end_date.date()))

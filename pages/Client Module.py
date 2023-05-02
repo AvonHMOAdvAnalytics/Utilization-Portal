@@ -40,19 +40,19 @@ def display_utilization_data(policy):
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'ApprovedPAAmount'].sum()
-    #client_pa_value = '#' + locale.format_string('%d', client_pa_value, grouping=True)
+    client_pa_value = '#' + '{:,}'.format(client_pa_value) 
     client_pa_count = utilization_data.loc[
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'AvonPACode'].nunique()
-    #client_pa_count = locale.format_string('%d', client_pa_count, grouping=True)
+    client_pa_count = '{:,}'.format(client_pa_count)
     client_member_count = utilization_data.loc[
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
             'MemberNo'].nunique()
-    #client_member_count = locale.format_string('%d', client_member_count, grouping=True)
+    client_member_count = '{:,}'.format(client_member_count)
     client_name = utilization_data.loc[utilization_data['PolicyNo'] == policy, 'Client'].values[0]
     client_data = utilization_data.loc[
             (utilization_data['EncounterDate'] >= start_date) &
@@ -64,6 +64,7 @@ def display_utilization_data(policy):
         active_enrollees['PolicyNo'] == policy,
         'MemberNo'
     ].nunique()
+    active_lives = '{:,}'.format(active_lives)
 
     if client_name is not None and len(client_data) > 0:
         st.subheader(client_name + ' utilization between ' + str(start_date.date()) + ' and ' + str(end_date.date()))

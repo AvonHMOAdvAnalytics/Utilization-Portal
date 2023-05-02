@@ -102,7 +102,8 @@ def display_member_utilization(mem_id):
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date),
-            'ApprovedPAAmount'].sum()        
+            'ApprovedPAAmount'].sum() 
+    member_pa_value = '#' + '{:,}'.format(member_pa_value)       
     #member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
     membername = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Name'].iat[0]
     client = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'ClientName'].iat[0]
