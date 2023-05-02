@@ -4,6 +4,7 @@ import pyodbc
 from PIL import Image
 import datetime as dt
 import locale
+#import resource
 
 
 st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
@@ -24,6 +25,7 @@ query = 'SELECT PolicyNo\
             ,MemberType\
             ,MemberNo\
             ,Name\
+            ,PrimaryProviderNo\
             ,Gender\
             ,DATEDIFF(year,DOB,getdate()) MemberAge\
             ,State\
@@ -33,7 +35,6 @@ query = 'SELECT PolicyNo\
              from [dbo].[tbl_MemberMasterView]'
 
 query1 = 'SELECT * from vw_utilization_data'
-
 
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
@@ -58,31 +59,38 @@ active_enrollees, utilization_data = get_data_from_sql()
 #active_enrollees = get_data_from_sql(query=query)
 #utilization_data = get_data_from_sql(query=query1)
 
+
 limit_df = pd.read_csv('Benefit_Limits.csv')
 
 st.session_state['utilization_data'] = utilization_data
+st.session_state['active_enrollees'] = active_enrollees
+
+
 
 memberid = st.sidebar.text_input('Enrollee Member ID')
 st.sidebar.button(label='Submit')
-if 'id' not in st.session_state:
-    st.session_state['id'] = None
 
-if memberid is not None:
-    st.session_state['id'] = memberid
 
-def display_member_utilization(id):
-    if not id.isdigit():
+# if 'key' not in st.session_state:
+#     st.session_state['key'] = None
+
+# if memberid is not None:
+#     st.session_state['key'] = memberid
+
+
+def display_member_utilization(mem_id):   
+    if not mem_id.isdigit():
         st.write('Enter a valid integer for MemberNo')
-        return
-    
-    id = int(id)
+        return 
+  
+    mem_id = int(mem_id)
 
-    if id not in active_enrollees['MemberNo'].values:
+    if mem_id not in active_enrollees['MemberNo'].values:
         st.write('No data found for the given member number')
         return
     
-    policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == id, 'Policy Inception'].iat[0])
-    policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == id, 'Policy Expiry'].iat[0])
+    policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Inception'].iat[0])
+    policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Expiry'].iat[0])
 
     
     # member_pa_value = st.session_state['utilization_data'].loc[
@@ -91,20 +99,20 @@ def display_member_utilization(id):
     #     policy_start_date:policy_end_date
     #     ].sum()
     member_pa_value = utilization_data.loc[
-            (utilization_data['MemberNo'] == id) &
+            (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date),
             'ApprovedPAAmount'].sum()        
     member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
-    membername = active_enrollees.loc[active_enrollees['MemberNo'] == id, 'Name'].iat[0]
-    client = active_enrollees.loc[active_enrollees['MemberNo'] == id, 'ClientName'].iat[0]
-    plan = active_enrollees.loc[active_enrollees['MemberNo'] == id, 'PlanType'].iat[0]
-    membertype = active_enrollees.loc[active_enrollees['MemberNo'] == id, 'MemberType'].iat[0]
-    memberage = active_enrollees.loc[active_enrollees['MemberNo'] == id, 'MemberAge'].iat[0]
+    membername = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Name'].iat[0]
+    client = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'ClientName'].iat[0]
+    plan = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'PlanType'].iat[0]
+    membertype = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'MemberType'].iat[0]
+    memberage = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'MemberAge'].iat[0]
     member_utilization = utilization_data.loc[
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date) &
-            (utilization_data['MemberNo'] == id),
+            (utilization_data['MemberNo'] == mem_id),
             ['AvonPACode','Hospital', 'EncounterDate', 'Benefits', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
         ].set_index('AvonPACode')
 
@@ -143,5 +151,15 @@ def display_member_utilization(id):
         
         st.write(enrollee_benefit_limit)
         return
-    
+
 display_member_utilization(memberid)
+
+# def get_usage():
+#     usage = resource.getrusage(resource.RUSAGE_SELF)
+#     cpu_usage = usage.ru_utime + usage.ru_stime
+#     mem_usage = usage.ru_maxrss / 1024
+#     return cpu_usage, mem_usage
+
+# cpu_usage, mem_usage = get_usage()
+# st.write(f'CPU Usage: {cpu_usage:.2f} seconds')
+# st.write(f'Memory Usage: {mem_usage:.2f} MB')

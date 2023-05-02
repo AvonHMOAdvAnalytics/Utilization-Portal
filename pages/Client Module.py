@@ -11,15 +11,16 @@ st.image(image)
 
 st.title('Client Utilization Data')
 utilization_data = st.session_state['utilization_data']
+active_enrollees = st.session_state['active_enrollees']
 
 policyno = st.sidebar.text_input('Client Policy Number')
 st.sidebar.button(label='Submit')
 
-if 'policy' not in st.session_state:
-    st.session_state['policy'] = None
+# if 'policy' not in st.session_state:
+#     st.session_state['policy'] = None
 
-if policyno is not None:
-    st.session_state['policy'] = policyno
+# if policyno is not None:
+#     st.session_state['policy'] = policyno
 
 
 def display_utilization_data(policy):
@@ -50,7 +51,7 @@ def display_utilization_data(policy):
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date),
-            :].index.nunique()
+            'MemberNo'].nunique()
     client_member_count = locale.format_string('%d', client_member_count, grouping=True)
     client_name = utilization_data.loc[utilization_data['PolicyNo'] == policy, 'Client'].values[0]
     client_data = utilization_data.loc[
@@ -59,12 +60,21 @@ def display_utilization_data(policy):
             (utilization_data['PolicyNo'] == policy),
             ['AvonPACode','MemberName', 'MemberNo','PlanName','Hospital', 'EncounterDate', 'Benefits', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ].set_index('AvonPACode')
+    active_lives = active_enrollees.loc[
+        active_enrollees['PolicyNo'] == policy,
+        'MemberNo'
+    ].nunique()
 
     if client_name is not None and len(client_data) > 0:
         st.subheader(client_name + ' utilization between ' + str(start_date.date()) + ' and ' + str(end_date.date()))
-        st.metric(label = 'Total PA Value', value = client_pa_value)
-        st.metric(label = 'Total PA Count', value = client_pa_count)
-        st.metric(label = 'Number of Enrollees who Accessed Care', value = client_member_count)
+        col1, col2 = st.columns(2)
+        col1.metric(label = 'Total PA Value', value = client_pa_value)
+        col2.metric(label = 'Total PA Count', value = client_pa_count)
+
+        col3, col4 = st.columns(2)
+        col3.metric(label='Number of Active Lives', value=active_lives)
+        col4.metric(label = 'Number of Enrollees who Accessed Care', value = client_member_count)
+        utilization_data['MemberNo'] = utilization_data['MemberNo'].astype(str)
         st.dataframe(client_data)
 
         st.download_button(
@@ -76,6 +86,7 @@ def display_utilization_data(policy):
     else:
         st.write('No data found for the given policy number and date range')
         return 
-    
+
 
 display_utilization_data(policyno)
+
