@@ -239,36 +239,6 @@ def display_monthly_utilization(df):
     return result
 
 
-# def display_last_6_months_utilization(df, category_col):
-#     # Convert the Encounter date column to a datetime object
-#     df['EncounterDate'] = pd.to_datetime(df['EncounterDate'])
-    
-#     # Determine the start and end dates of the last 4 months
-#     end_date = df['EncounterDate'].max()
-#     start_date = end_date - pd.DateOffset(months=6)
-    
-#     # Filter the data to only include the last 4 months
-#     df = df.loc[(df['EncounterDate'] >= start_date) & (df['EncounterDate'] <= end_date)]
-    
-#     # Group the data by month and appropriate category and sum the PA Value
-#     df = df.groupby([pd.Grouper(key='EncounterDate', freq='M'), category_col])['ApprovedPAAmount'].sum().reset_index()
-    
-#     # Pivot the data to display months as columns and products as rows
-#     df = df.pivot(index=category_col, columns='EncounterDate', values='ApprovedPAAmount')
-    
-#     # Rename the columns to display the month and year
-#     df.columns = df.columns.strftime('%Y-%m')
-    
-#     # Sort the data by the last column (the most recent month)
-#     df = df.sort_values(by=df.columns[-1], ascending=False)    
-
-#     st.subheader('Utilization over the past 6 Months by ' + category_col)
-#     st.dataframe(df.iloc[:, 1:])
-
-
-
-
-
 options = st.sidebar.radio('Report Mode', options=['Overall Report', 'Weekly Report'])
 
 wellness = ['ANNUAL HEALTH CHECK ADVANCED', 'ANNUAL HEALTH CHECK BASIC', 'ANNUAL HEALTH CHECK COMPREHENSIVE', 'ANNUAL HEALTH CHECK PRINCIPAL ONLY']
