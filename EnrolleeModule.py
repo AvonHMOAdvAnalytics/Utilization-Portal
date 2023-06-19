@@ -34,7 +34,7 @@ query = 'SELECT PolicyNo\
             ,MobileNo\
              from [dbo].[tbl_MemberMasterView]'
 
-query1 = 'SELECT * from vw_utilization_data'
+query1 = 'SELECT distinct * from utilization_portal_data'
 
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
@@ -80,7 +80,7 @@ st.sidebar.button(label='Submit')
 
 def display_member_utilization(mem_id):   
     if not mem_id.isdigit():
-        st.write('Enter a valid integer for MemberNo')
+        st.write('Enter a valid MemberNo')
         return 
   
     mem_id = int(mem_id)
@@ -101,7 +101,8 @@ def display_member_utilization(mem_id):
     member_pa_value = utilization_data.loc[
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['EncounterDate'] >= policy_start_date) &
-            (utilization_data['EncounterDate'] <= policy_end_date),
+            (utilization_data['EncounterDate'] <= policy_end_date) &
+            (utilization_data['New Approval Status'] == 'APPROVED'),
             'ApprovedPAAmount'].sum() 
     member_pa_value = '#' + '{:,}'.format(member_pa_value)       
     #member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
@@ -113,9 +114,10 @@ def display_member_utilization(mem_id):
     member_utilization = utilization_data.loc[
             (utilization_data['EncounterDate'] >= policy_start_date) &
             (utilization_data['EncounterDate'] <= policy_end_date) &
-            (utilization_data['MemberNo'] == mem_id),
-            ['AvonPACode','Hospital', 'EncounterDate', 'Benefits', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
-        ].set_index('AvonPACode')
+            (utilization_data['MemberNo'] == mem_id) &
+            (utilization_data['New Approval Status'] == 'APPROVED'),
+            ['AvonPaCode','ProviderName', 'EncounterDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'CaseManager', 'ApprovedPAAmount' ]
+        ].set_index('AvonPaCode')
 
     if membername is not None and options == 'Home Page':  
         #col1,col2= st.columns(2)
@@ -136,7 +138,7 @@ def display_member_utilization(mem_id):
         #     st.write("Enrollee not available")
     elif len(member_utilization) > 0 and options == 'Enrollee Utilization Summary':
         st.subheader('Utilization summary for ' + membername)
-        utilization_summary = member_utilization.groupby('Benefits')['ApprovedPAAmount'].sum().__round__(2)
+        utilization_summary = member_utilization.groupby('Benefit')['ApprovedPAAmount'].sum().__round__(2)
         st.dataframe(utilization_summary, use_container_width=True)
         st.subheader('Utilization details for '+ membername)
         st.dataframe(member_utilization,use_container_width=True)
