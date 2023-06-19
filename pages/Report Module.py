@@ -386,6 +386,3 @@ elif options == 'Weekly Report':
 
 
     st.write(aggregate_data)
-
-elif options == 'Monthly Report':
-    display_last_6_months_utilization(utilization_data, 'ProviderName')
