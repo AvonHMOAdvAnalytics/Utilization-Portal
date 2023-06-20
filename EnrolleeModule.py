@@ -3,8 +3,7 @@ import pandas as pd
 import pyodbc
 from PIL import Image
 import datetime as dt
-#import locale
-#import resource
+
 
 
 st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
@@ -56,9 +55,6 @@ def get_data_from_sql():
     return active_enrolees, utilization_data
 
 active_enrollees, utilization_data = get_data_from_sql()
-#active_enrollees = get_data_from_sql(query=query)
-#utilization_data = get_data_from_sql(query=query1)
-
 
 limit_df = pd.read_csv('Benefit_Limits.csv')
 
@@ -70,12 +66,6 @@ st.session_state['active_enrollees'] = active_enrollees
 memberid = st.sidebar.text_input('Enrollee Member ID')
 st.sidebar.button(label='Submit')
 
-
-# if 'key' not in st.session_state:
-#     st.session_state['key'] = None
-
-# if memberid is not None:
-#     st.session_state['key'] = memberid
 
 
 def display_member_utilization(mem_id):   
@@ -92,12 +82,6 @@ def display_member_utilization(mem_id):
     policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Inception'].iat[0])
     policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Expiry'].iat[0])
 
-    
-    # member_pa_value = st.session_state['utilization_data'].loc[
-    #     memberid,
-    #     'ApprovedPAAmount',].loc[
-    #     policy_start_date:policy_end_date
-    #     ].sum()
     member_pa_value = utilization_data.loc[
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['EncounterDate'] >= policy_start_date) &
@@ -156,13 +140,3 @@ def display_member_utilization(mem_id):
         return
 
 display_member_utilization(memberid)
-
-# def get_usage():
-#     usage = resource.getrusage(resource.RUSAGE_SELF)
-#     cpu_usage = usage.ru_utime + usage.ru_stime
-#     mem_usage = usage.ru_maxrss / 1024
-#     return cpu_usage, mem_usage
-
-# cpu_usage, mem_usage = get_usage()
-# st.write(f'CPU Usage: {cpu_usage:.2f} seconds')
-# st.write(f'Memory Usage: {mem_usage:.2f} MB')
