@@ -3,10 +3,7 @@ import datetime as dt
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from PIL import Image
-import matplotlib.pyplot as plt
-import seaborn as sns
 import altair as alt
-import numpy as np
 from datetime import datetime, timedelta
 
 image = Image.open('utilization_image.png')
