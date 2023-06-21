@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'avonutilization'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_41ECF319F58D4A25AA15DD4AC00C643A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EE5D888CF42744D0959532BB45B4ADD7 }}
