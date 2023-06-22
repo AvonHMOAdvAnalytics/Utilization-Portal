@@ -119,6 +119,7 @@ def display_utilization_data(policy):
         col4.metric(label = 'Number of Enrollees who Accessed Care', value = client_member_count)
         data['MemberNo'] = data['MemberNo'].astype(str)
         plan_agg = data.groupby('PlanName').agg({'ApprovedPAAmount':'sum', 'AvonPaCode':'nunique', 'MemberNo':'nunique'}).sort_values(by='ApprovedPAAmount',ascending=False).__round__(2)
+        plan_agg = plan_agg.rename(columns={'ApprovedPAAmount':'Total PA Amount', 'AvonPaCode':'PA Generated', 'MemberNo':'No. of Enrollees'})
         plan_agg = plan_agg.reset_index()
         data = data.set_index('AvonPaCode')
         st.dataframe(plan_agg)

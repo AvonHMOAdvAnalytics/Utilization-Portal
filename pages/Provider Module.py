@@ -9,7 +9,7 @@ from PIL import Image
 image = Image.open('utilization_image.png')
 st.image(image)
 
-st.title('Hospital Utilization Data')
+st.title('Provider Utilization Data')
 utilization_data = st.session_state['utilization_data']
 active_enrollees = st.session_state['active_enrollees']
 
@@ -60,7 +60,7 @@ def display_utilization_data(provider):
  ## Range selector
     start_date = pd.to_datetime(st.sidebar.date_input('Start Date',min_value=dt.datetime.now().date()-relativedelta(years=1)))
     end_date = pd.to_datetime(st.sidebar.date_input('End State',max_value=dt.datetime.now().date()))
-    benefit = st.selectbox(label='Select Benefit', options=('All','Consultation','Drugs','Chronic Disease','Optical', 'Dental', 'Lab Investigation', 'Annual Health Check', 'Surgery', 'Maternity', 'Others'))
+    benefit = st.selectbox(label='Select Benefit', options=('All','Consultation','Drugs','Chronic Disease','Optical', 'Dental', 'Lab Investigation', 'Wellness', 'Surgery', 'Maternity', 'Others'))
 
     provider_data = utilization_data.loc[
             (utilization_data['ProviderNo'] == provider) &
@@ -84,7 +84,7 @@ def display_utilization_data(provider):
         data = provider_data.loc[provider_data['Benefit'].isin(surgery)]
     elif benefit == 'Lab Investigation':
         data = provider_data.loc[provider_data['Benefit'].isin(lab_investigation)]
-    elif benefit == 'Annual Health Check':
+    elif benefit == 'Wellness':
         data = provider_data.loc[provider_data['Benefit'].isin(health_check)]
     elif benefit == 'Maternity':
         data = provider_data.loc[provider_data['Benefit'].isin(maternity)]
@@ -127,6 +127,7 @@ def display_utilization_data(provider):
 
             data['MemberNo'] = data['MemberNo'].astype(str)
             client_agg = data.groupby('Client').agg({'ApprovedPAAmount':'sum','AvonPaCode':'nunique','MemberNo':'nunique'}).sort_values(by='ApprovedPAAmount',ascending=False).__round__(2)
+            client_agg = client_agg.rename(columns={'ApprovedPAAmount':'Total PA Amount', 'AvonPaCode':'PA Generated', 'MemberNo':'No. of Enrollees'})
             client_agg = client_agg.reset_index()
             data = data.set_index('AvonPaCode')
             st.dataframe(client_agg.head(10))

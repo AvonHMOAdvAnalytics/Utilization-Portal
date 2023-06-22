@@ -327,6 +327,7 @@ if options == 'Overall Report':
     top_10_chart(data, 'EncounterDate','Benefit', 'ApprovedPAAmount', start_date, end_date)
 
     st.subheader(benefit + ' Utilization Data between ' + str(start_date.date()) + ' and ' + str(end_date.date()))
+    data = data.set_index('AvonPaCode')
     st.dataframe(data)
 
     st.download_button(
