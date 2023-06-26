@@ -313,7 +313,7 @@ if options == 'Overall Report':
 
     st.metric(label='Total Enrollees Who Accessed Care', value=member_count)
 
-    st.subheader('List of Top 20 Hospitals by Approved PA Amount')
+    st.subheader('List of Top 20 Providers by Approved PA Amount')
     aggregate_by_column(data, 'EncounterDate', 'ProviderName', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
 
     top_10_chart(data, 'EncounterDate','ProviderName', 'ApprovedPAAmount', start_date, end_date)
