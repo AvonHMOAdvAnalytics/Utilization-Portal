@@ -64,10 +64,10 @@ def display_utilization_data(provider):
 
     provider_data = utilization_data.loc[
             (utilization_data['ProviderNo'] == provider) &
-            (utilization_data['EncounterDate'] >= start_date) &
-            (utilization_data['EncounterDate'] <= end_date) &
+            (utilization_data['PAIssueDate'] >= start_date) &
+            (utilization_data['PAIssueDate'] <= end_date) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ]
 
     if benefit == 'All':

@@ -71,20 +71,20 @@ def top_10_chart(dataframe, date_column, category, value_column, start_date, end
 
 def display_last_4_weeks_utilization(df, category_col):
     # Convert the Encounter date column to a datetime object
-    df['EncounterDate'] = pd.to_datetime(df['EncounterDate'])
+    df['PAIssueDate'] = pd.to_datetime(df['PAIssueDate'])
     
     # Determine the start and end dates of the last 4 weeks
-    end_date = df['EncounterDate'].max()
+    end_date = df['PAIssueDate'].max()
     start_date = end_date - timedelta(weeks=4)
     
     # Filter the data to only include the last 4 weeks
-    df = df.loc[(df['EncounterDate'] >= start_date) & (df['EncounterDate'] <= end_date)]
+    df = df.loc[(df['PAIssueDate'] >= start_date) & (df['PAIssueDate'] <= end_date)]
     
     # Group the data by week and appropriate category and sum the PA Value
-    df = df.groupby([pd.Grouper(key='EncounterDate', freq='W-MON'), category_col])['ApprovedPAAmount'].sum().reset_index()
+    df = df.groupby([pd.Grouper(key='PAIssueDate', freq='W-MON'), category_col])['ApprovedPAAmount'].sum().reset_index()
     
     #Pivot the data to display weeks as columns and products as rows
-    df = df.pivot(index=category_col, columns='EncounterDate', values='ApprovedPAAmount')
+    df = df.pivot(index=category_col, columns='PAIssueDate', values='ApprovedPAAmount')
     
     # Rename the columns to display the week start date
     df.columns = df.columns.strftime('%Y-%m-%d')
@@ -98,20 +98,20 @@ def display_last_4_weeks_utilization(df, category_col):
 
 def display_week_on_week_trend(df, column_name):
     # Convert the sales date column to a datetime object
-    df['EncounterDate'] = pd.to_datetime(df['EncounterDate'])
+    df['PAIssueDate'] = pd.to_datetime(df['PAIssueDate'])
     
     # Determine the start and end dates of the last 4 weeks
-    end_date = df['EncounterDate'].max()
+    end_date = df['PAIssueDate'].max()
     start_date = end_date - timedelta(weeks=4)
     
     # Filter the data to only include the last 4 weeks
-    df = df.loc[(df['EncounterDate'] >= start_date) & (df['EncounterDate'] <= end_date)]
+    df = df.loc[(df['PAIssueDate'] >= start_date) & (df['PAIssueDate'] <= end_date)]
     
     # Group the data by week and the specified column and calculate the sales total
-    df = df.groupby([pd.Grouper(key='EncounterDate', freq='W-MON'), column_name])['ApprovedPAAmount'].sum().reset_index()
+    df = df.groupby([pd.Grouper(key='PAIssueDate', freq='W-MON'), column_name])['ApprovedPAAmount'].sum().reset_index()
     
     # Pivot the data to display weeks as columns and the specified column as rows
-    df = df.pivot(index=column_name, columns='EncounterDate', values='ApprovedPAAmount')
+    df = df.pivot(index=column_name, columns='PAIssueDate', values='ApprovedPAAmount')
     
     
     # Rename the columns to display the week start date
@@ -125,7 +125,7 @@ def display_week_on_week_trend(df, column_name):
     
     
     # Transpose the data to display weeks as columns and the specified column as rows
-    df = top_10_categories.T.reset_index().rename(columns={'EncounterDate': 'Week'})[1:]
+    df = top_10_categories.T.reset_index().rename(columns={'PAIssueDate': 'Week'})[1:]
     
     # Melt the data to convert columns into a "variable" column and a "value" column
     df = pd.melt(df, id_vars=['Week'], var_name=column_name, value_name='Total Weekly PA Value')
@@ -148,24 +148,24 @@ def display_week_on_week_trend(df, column_name):
 
 def display_sales_comparison_chart(df, column_name):
   # Convert the Encounter date column to a datetime object
-    df['EncounterDate'] = pd.to_datetime(df['EncounterDate'])
+    df['PAIssueDate'] = pd.to_datetime(df['PAIssueDate'])
     
     # Determine the start and end dates of the last 4 weeks
-    end_date = df['EncounterDate'].max()
+    end_date = df['PAIssueDate'].max()
     start_date = end_date - timedelta(weeks=2)
     
     # Filter the data to only include the last 4 weeks
-    previous_df = df.loc[(df['EncounterDate'] >= start_date) & (df['EncounterDate'] <= end_date)]
+    previous_df = df.loc[(df['PAIssueDate'] >= start_date) & (df['PAIssueDate'] <= end_date)]
     
     # Group the data by week and appropriate category and sum the PA Value
-    previous_df = previous_df.groupby([pd.Grouper(key='EncounterDate', freq='W-MON'), column_name])['ApprovedPAAmount'].sum().reset_index()
+    previous_df = previous_df.groupby([pd.Grouper(key='PAIssueDate', freq='W-MON'), column_name])['ApprovedPAAmount'].sum().reset_index()
     
     #Pivot the data to display weeks as columns and products as rows
-    previous_df = previous_df.pivot(index=column_name, columns='EncounterDate', values='ApprovedPAAmount')
+    previous_df = previous_df.pivot(index=column_name, columns='PAIssueDate', values='ApprovedPAAmount')
 
     previous_month = pd.to_datetime('today').to_period('M') - 1
 
-    previous_month_df = df[df['EncounterDate'].dt.to_period('M') == previous_month]
+    previous_month_df = df[df['PAIssueDate'].dt.to_period('M') == previous_month]
 
     previous_month_average = (previous_month_df.groupby(column_name)['ApprovedPAAmount'].sum()/4).reset_index()
 
@@ -205,17 +205,17 @@ def display_sales_comparison_chart(df, column_name):
 
 def display_monthly_utilization(df):
     # Convert the Encounter date column to a datetime object
-    df['EncounterDate'] = pd.to_datetime(df['EncounterDate'])
+    df['PAIssueDate'] = pd.to_datetime(df['PAIssueDate'])
     
     # Determine the start and end dates of the past 6 months
-    end_date = df['EncounterDate'].max()
+    end_date = df['PAIssueDate'].max()
     start_date = end_date - pd.DateOffset(months=6) + pd.DateOffset(days=1)  # Add 1 day to start from the next month
     
     # Filter the data to only include the past 6 months
-    df = df.loc[(df['EncounterDate'] >= start_date) & (df['EncounterDate'] <= end_date)]
+    df = df.loc[(df['PAIssueDate'] >= start_date) & (df['PAIssueDate'] <= end_date)]
     
     # Group the data by month and calculate the total utilization
-    df = df.groupby(pd.Grouper(key='EncounterDate', freq='M'))['ApprovedPAAmount'].sum().reset_index()
+    df = df.groupby(pd.Grouper(key='PAIssueDate', freq='M'))['ApprovedPAAmount'].sum().reset_index()
     
     # Generate a list of month-year labels for the table columns
     month_labels = [datetime.strftime(m, '%b-%Y') for m in pd.date_range(start_date, end_date, freq='M')]
@@ -226,7 +226,7 @@ def display_monthly_utilization(df):
     # Iterate through the month-year labels and add the corresponding utilization to the DataFrame
     for month_label in month_labels:
         month = datetime.strptime(month_label, '%b-%Y')
-        utilization_df = df.loc[df['EncounterDate'] == month, 'ApprovedPAAmount']
+        utilization_df = df.loc[df['PAIssueDate'] == month, 'ApprovedPAAmount']
         if not utilization_df.empty:
             utilization = utilization_df.values[0]
             result = result.append({'Month': month_label, 'Total Utilization': utilization}, ignore_index=True)
@@ -273,7 +273,7 @@ if options == 'Overall Report':
             (utilization_data['EncounterDate'] >= start_date) &
             (utilization_data['EncounterDate'] <= end_date) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ]
     
     if benefit == 'All':
@@ -314,17 +314,17 @@ if options == 'Overall Report':
     st.metric(label='Total Enrollees Who Accessed Care', value=member_count)
 
     st.subheader('List of Top 20 Providers by Approved PA Amount')
-    aggregate_by_column(data, 'EncounterDate', 'ProviderName', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
+    aggregate_by_column(data, 'PAIssueDate', 'ProviderName', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
 
-    top_10_chart(data, 'EncounterDate','ProviderName', 'ApprovedPAAmount', start_date, end_date)
+    top_10_chart(data, 'PAIssueDate','ProviderName', 'ApprovedPAAmount', start_date, end_date)
 
     st.subheader('List of Top 20 Clients by Approved PA Amount')
-    aggregate_by_column(data, 'EncounterDate', 'Client', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
-    top_10_chart(data, 'EncounterDate','Client', 'ApprovedPAAmount', start_date, end_date)
+    aggregate_by_column(data, 'PAIssueDate', 'Client', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
+    top_10_chart(data, 'PAIssueDate','Client', 'ApprovedPAAmount', start_date, end_date)
 
     st.subheader('List of Top 20 Benefits by Approved PA Amount')
-    aggregate_by_column(data, 'EncounterDate', 'Benefit', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
-    top_10_chart(data, 'EncounterDate','Benefit', 'ApprovedPAAmount', start_date, end_date)
+    aggregate_by_column(data, 'PAIssueDate', 'Benefit', 'ApprovedPAAmount','AvonPaCode', start_date, end_date)
+    top_10_chart(data, 'PAIssueDate','Benefit', 'ApprovedPAAmount', start_date, end_date)
 
     st.subheader(benefit + ' Utilization Data between ' + str(start_date.date()) + ' and ' + str(end_date.date()))
     data = data.set_index('AvonPaCode')
@@ -352,9 +352,9 @@ elif options == 'Weekly Report':
     pending_df = utilization_data.loc[utilization_data['New Approval Status'].isnull()]
 
 
-    pending_df['EncounterDate'] = pd.to_datetime(pending_df['EncounterDate'])
+    pending_df['PAIssueDate'] = pd.to_datetime(pending_df['PAIssueDate'])
 
-    pending_df.set_index('EncounterDate', inplace=True)
+    pending_df.set_index('PAIssueDate', inplace=True)
 
     aggregate_data = pending_df[pending_df['InitialApprovalStatus'] == 'PENDING'].groupby(pd.Grouper(freq='W-MON')).agg({
         'FinalPAAmount': 'sum',
@@ -369,8 +369,8 @@ elif options == 'Weekly Report':
     })
 
     approved_df = utilization_data.loc[utilization_data['New Approval Status'] == 'APPROVED']
-    approved_df['EncounterDate'] = pd.to_datetime(approved_df['EncounterDate'])
-    approved_df.set_index('EncounterDate', inplace=True)
+    approved_df['PAIssueDate'] = pd.to_datetime(approved_df['PAIssueDate'])
+    approved_df.set_index('PAIssueDate', inplace=True)
     aggregate_data['Approved_PA_Value'] = approved_df[approved_df['New Approval Status'] == 'APPROVED'].groupby(pd.Grouper(freq='W-MON')).agg({
         'ApprovedPAAmount':'sum'})
     aggregate_data['Approved_PA_Count'] = approved_df[approved_df['New Approval Status'] == 'APPROVED'].groupby(pd.Grouper(freq='W-MON')).agg({

@@ -50,7 +50,7 @@ def get_data_from_sql():
         )
     active_enrolees = pd.read_sql(query, conn)
     utilization_data = pd.read_sql(query1, conn)
-    utilization_data['EncounterDate'] = pd.to_datetime(utilization_data['EncounterDate'])
+    utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate'])
     conn.close()
     return active_enrolees, utilization_data
 
@@ -84,8 +84,8 @@ def display_member_utilization(mem_id):
 
     member_pa_value = utilization_data.loc[
             (utilization_data['MemberNo'] == mem_id) &
-            (utilization_data['EncounterDate'] >= policy_start_date) &
-            (utilization_data['EncounterDate'] <= policy_end_date) &
+            (utilization_data['PAIssueDate'] >= policy_start_date) &
+            (utilization_data['PAIssueDate'] <= policy_end_date) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
             'ApprovedPAAmount'].sum() 
     member_pa_value = '#' + '{:,}'.format(member_pa_value)       
@@ -96,11 +96,11 @@ def display_member_utilization(mem_id):
     membertype = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'MemberType'].iat[0]
     memberage = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'MemberAge'].iat[0]
     member_utilization = utilization_data.loc[
-            (utilization_data['EncounterDate'] >= policy_start_date) &
-            (utilization_data['EncounterDate'] <= policy_end_date) &
+            (utilization_data['PAIssueDate'] >= policy_start_date) &
+            (utilization_data['PAIssueDate'] <= policy_end_date) &
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','ProviderName', 'EncounterDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'CaseManager', 'ApprovedPAAmount' ]
+            ['AvonPaCode','ProviderName', 'EncounterDate','PAIssueDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'CaseManager', 'ApprovedPAAmount' ]
         ].set_index('AvonPaCode')
 
     if membername is not None and options == 'Home Page':  

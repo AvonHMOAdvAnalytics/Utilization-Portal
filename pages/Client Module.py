@@ -63,11 +63,11 @@ def display_utilization_data(policy):
     benefit = st.selectbox(label='Select Benefit', options=('All','Consultation','Drugs','Chronic Disease','Optical', 'Dental', 'Lab Investigation', 'Annual Health Check', 'Surgery', 'Maternity', 'Others'))
 
     client_data = utilization_data.loc[
-            (utilization_data['EncounterDate'] >= start_date) &
-            (utilization_data['EncounterDate'] <= end_date) &
+            (utilization_data['PAIssueDate'] >= start_date) &
+            (utilization_data['PAIssueDate'] <= end_date) &
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ]
     if benefit == 'All':
         data = client_data
