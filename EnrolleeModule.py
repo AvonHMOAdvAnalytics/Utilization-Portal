@@ -3,6 +3,7 @@ import pandas as pd
 import pyodbc
 from PIL import Image
 import datetime as dt
+import os
 
 
 
@@ -38,15 +39,19 @@ query1 = 'SELECT distinct * from utilization_portal_data'
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql():
+    server = os.environ.get('server_name')
+    database = os.environ.get('db_name')
+    username = os.environ.get('db_username')
+    password = os.environ.get('password')
     conn = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        +st.secrets['server']
+        + server
         +';DATABASE='
-        +st.secrets['database']
+        + database
         +';UID='
-        +st.secrets['username']
+        + username
         +';PWD='
-        +st.secrets['password']
+        + password
         )
     active_enrolees = pd.read_sql(query, conn)
     utilization_data = pd.read_sql(query1, conn)
