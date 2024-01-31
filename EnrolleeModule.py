@@ -79,10 +79,10 @@ conn = pyodbc.connect(
         + password
         )
 #assign credentials for the avon flex DB credentials
-server1 = os.environ.get('server_name')
-database1 = os.environ.get('db_name')
-username1 = os.environ.get('db_username')
-password1 = os.environ.get('password')
+server1 = os.environ.get('server_name1')
+database1 = os.environ.get('db_name1')
+username1 = os.environ.get('db_username1')
+password1 = os.environ.get('password1')
 conn1 = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
         + server1
