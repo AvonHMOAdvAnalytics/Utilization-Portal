@@ -150,7 +150,7 @@ def display_member_utilization(mem_id):
             (utilization_data['PAIssueDate'] <= policy_end_date) &
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','ProviderName', 'EncounterDate','PAIssueDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'CaseManager', 'ApprovedPAAmount' ]
+            ['AvonPaCode','ProviderName', 'EncounterDate','PAIssueDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'ProviderManager', 'ApprovedPAAmount' ]
         ].set_index('AvonPaCode')
     
     #ensure the memberno column is converted to integer
