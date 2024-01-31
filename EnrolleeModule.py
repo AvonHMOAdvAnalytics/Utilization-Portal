@@ -161,7 +161,7 @@ def display_member_utilization(mem_id):
     else:
         last_login_date = None
     #create 2 new columns in active enrollees where the id is also present in the app_data
-    active_enrollees['AppLogin?'] = active_enrollees['MemberNo'].isin(app_data['LoginMemberNo']).map({True: 'Yes', False: 'No'})
+    active_enrollees['AppLogin?'] = active_enrollees['MemberNo'].isin(app_data['LoginMemberNo']).map({True: 'Active', False: 'Not Active'})
     active_enrollees['Last_Login_Date'] = active_enrollees['MemberNo'].isin(app_data['LoginMemberNo']).map({True: last_login_date, False: 'None'})
     #assign the app status and last login date to a varaible as shown below
     enrollee_app_status = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'AppLogin?'].iat[0]
