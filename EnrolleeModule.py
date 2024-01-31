@@ -35,15 +35,40 @@ query = 'SELECT PolicyNo\
              from [dbo].[tbl_MemberMasterView]'
 
 query1 = 'SELECT distinct * from utilization_portal_data'
+query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
+            from Users \
+            where LastLoginDate is not null'
 
+# #define the connection for the DBs when working on the local environment
+# conn = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         +st.secrets['server']
+#         +';DATABASE='
+#         +st.secrets['database']
+#         +';UID='
+#         +st.secrets['username']
+#         +';PWD='
+#         +st.secrets['password']
+#         ) 
 
-@st.cache_data(ttl = dt.timedelta(hours=24))
-def get_data_from_sql():
-    server = os.environ.get('server_name')
-    database = os.environ.get('db_name')
-    username = os.environ.get('db_username')
-    password = os.environ.get('password')
-    conn = pyodbc.connect(
+# conn1 = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         +st.secrets['server1']
+#         +';DATABASE='
+#         +st.secrets['database1']
+#         +';UID='
+#         +st.secrets['username1']
+#         +';PWD='
+#         +st.secrets['password1']
+#         ) 
+
+#define the connections for the DBs when deployed to cloud
+#assign credentials for the avondw DB credentials
+server = os.environ.get('server_name')
+database = os.environ.get('db_name')
+username = os.environ.get('db_username')
+password = os.environ.get('password')
+conn = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
         + server
         +';DATABASE='
@@ -53,13 +78,35 @@ def get_data_from_sql():
         +';PWD='
         + password
         )
+#assign credentials for the avon flex DB credentials
+server1 = os.environ.get('server_name')
+database1 = os.environ.get('db_name')
+username1 = os.environ.get('db_username')
+password1 = os.environ.get('password')
+conn1 = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        + server1
+        +';DATABASE='
+        + database1
+        +';UID='
+        + username1
+        +';PWD='
+        + password1
+        )
+
+@st.cache_data(ttl = dt.timedelta(hours=24))
+def get_data_from_sql():
     active_enrolees = pd.read_sql(query, conn)
     utilization_data = pd.read_sql(query1, conn)
-    utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate'])
+    app_data = pd.read_sql(query2, conn1)
     conn.close()
-    return active_enrolees, utilization_data
+    return active_enrolees, utilization_data, app_data
 
-active_enrollees, utilization_data = get_data_from_sql()
+active_enrollees, utilization_data, app_data  = get_data_from_sql()
+
+utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate'])
+
+# active_enrollees, utilization_data = get_data_from_sql()
 
 limit_df = pd.read_csv('Benefit_Limits.csv')
 
@@ -67,10 +114,8 @@ st.session_state['utilization_data'] = utilization_data
 st.session_state['active_enrollees'] = active_enrollees
 
 
-
 memberid = st.sidebar.text_input('Enrollee Member ID')
 st.sidebar.button(label='Submit')
-
 
 
 def display_member_utilization(mem_id):   
@@ -107,7 +152,22 @@ def display_member_utilization(mem_id):
             (utilization_data['New Approval Status'] == 'APPROVED'),
             ['AvonPaCode','ProviderName', 'EncounterDate','PAIssueDate', 'Benefit', 'Diagnosis', 'Speciality', 'ServiceDescription','State', 'CaseManager', 'ApprovedPAAmount' ]
         ].set_index('AvonPaCode')
+    
+    #ensure the memberno column is converted to integer
+    app_data['LoginMemberNo'] = app_data['LoginMemberNo'].astype(int)
+    #assign the last_login_date to a variable for the requested memberid
+    if mem_id in app_data['LoginMemberNo'].values:
+        last_login_date = app_data.loc[app_data['LoginMemberNo'] == mem_id, 'LastLoginDate'].iat[0]
+    else:
+        last_login_date = None
+    #create 2 new columns in active enrollees where the id is also present in the app_data
+    active_enrollees['AppLogin?'] = active_enrollees['MemberNo'].isin(app_data['LoginMemberNo']).map({True: 'Yes', False: 'No'})
+    active_enrollees['Last_Login_Date'] = active_enrollees['MemberNo'].isin(app_data['LoginMemberNo']).map({True: last_login_date, False: 'None'})
+    #assign the app status and last login date to a varaible as shown below
+    enrollee_app_status = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'AppLogin?'].iat[0]
+    last_login_date = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Last_Login_Date'].iat[0]
 
+    
     if membername is not None and options == 'Home Page':  
         #col1,col2= st.columns(2)
         st.metric(label = 'Enrollee Name', value = membername)
@@ -120,8 +180,12 @@ def display_member_utilization(mem_id):
         col4.metric(label = 'Member Type', value = membertype)
 
         col5, col6 = st.columns(2)        
-        col5.metric(label = 'Policy Inception', value = str(policy_start_date))
-        col6.metric(label = 'PolicyExpiry', value = str(policy_end_date))
+        col5.metric(label = 'Policy Inception', value = str(policy_start_date.date()))
+        col6.metric(label = 'PolicyExpiry', value = str(policy_end_date.date()))
+
+        col7, col8 = st.columns(2)
+        col7.metric(label = 'Downloaded AVON Flex App?', value=enrollee_app_status)
+        col8.metric(label='Last Login Date', value=str(last_login_date))
         
         # except IndexError:
         #     st.write("Enrollee not available")
