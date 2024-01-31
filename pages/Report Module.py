@@ -273,7 +273,7 @@ if options == 'Overall Report':
             (utilization_data['PAIssueDate'] >= start_date) &
             (utilization_data['PAIssueDate'] <= end_date) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'ProviderManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ]
     
     if benefit == 'All':

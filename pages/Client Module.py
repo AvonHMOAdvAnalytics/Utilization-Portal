@@ -67,7 +67,7 @@ def display_utilization_data(policy):
             (utilization_data['PAIssueDate'] <= end_date) &
             (utilization_data['PolicyNo'] == policy) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
-            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'CaseManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
+            ['AvonPaCode','Client','EnrolleeName','Sex','Relation', 'MemberNo','PlanName','ProviderName', 'State', 'ProviderManager', 'EncounterDate','PAIssueDate', 'Benefit','Diagnosis', 'Speciality', 'ServiceDescription', 'ApprovedPAAmount' ]
             ]
     if benefit == 'All':
         data = client_data
