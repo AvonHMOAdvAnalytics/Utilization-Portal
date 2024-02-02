@@ -6,10 +6,10 @@ from PIL import Image
 #import locale
 
 #locale.setlocale(locale.LC_ALL, 'en_US')
-image = Image.open('utilization_image.png')
-st.image(image)
+image = Image.open('ProviderModule.png')
+st.image(image, use_column_width=True)
 
-st.title('Provider Utilization Data')
+# st.title('Provider Utilization Data')
 utilization_data = st.session_state['utilization_data']
 active_enrollees = st.session_state['active_enrollees']
 

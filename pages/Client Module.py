@@ -9,10 +9,10 @@ from yaml.loader import SafeLoader
 #import locale
 
 #locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-image = Image.open('utilization_image.png')
-st.image(image)
+image = Image.open('ClientModule.png')
+st.image(image, use_column_width=True)
 
-st.title('Client Utilization Data')
+# st.title('Client Utilization Data')
 utilization_data = st.session_state['utilization_data']
 active_enrollees = st.session_state['active_enrollees']
 

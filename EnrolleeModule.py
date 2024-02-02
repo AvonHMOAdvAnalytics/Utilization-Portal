@@ -11,8 +11,8 @@ st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sid
 
 
 #locale.setlocale(locale.LC_ALL, 'en_US')
-image = Image.open('avonwhite.png')
-st.image(image, use_column_width=False)
+image = Image.open('EnrolleModule.png')
+st.image(image, use_column_width=True)
 
 st.sidebar.title('Navigation')
 options = st.sidebar.radio('Module', options=['Home Page', 'Enrollee Utilization Summary', 'Enrollee Plan Benefit Limit'])
@@ -39,7 +39,7 @@ query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
             from Users \
             where LastLoginDate is not null'
 
-# #define the connection for the DBs when working on the local environment
+#define the connection for the DBs when working on the local environment
 # conn = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
 #         +st.secrets['server']
@@ -104,7 +104,7 @@ def get_data_from_sql():
 
 active_enrollees, utilization_data, app_data  = get_data_from_sql()
 
-utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate'])
+utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate']).dt.date
 
 # active_enrollees, utilization_data = get_data_from_sql()
 
