@@ -32,7 +32,7 @@ query = 'SELECT PolicyNo\
             ,PrimaryProviderName\
             ,Email\
             ,MobileNo\
-             from [dbo].[tbl_MemberMasterView]'
+             from [dbo].[tbl_MemberMasterView_stg]'
 
 query1 = 'SELECT distinct * from utilization_portal_data'
 query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
