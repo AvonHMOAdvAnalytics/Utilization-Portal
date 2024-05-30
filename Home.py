@@ -26,11 +26,11 @@ config = load_config()
 #     config = yaml.load(file, Loader=SafeLoader)
 
 # Hash passwords if not already hashed
-for user in config['credentials']['usernames']:
-    plain_password = config['credentials']['usernames'][user]['password']
-    if not plain_password.startswith('$2b$'):
-        hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
-        config['credentials']['usernames'][user]['password'] = hashed_password.decode('utf-8')
+# for user in config['credentials']['usernames']:
+#     plain_password = config['credentials']['usernames'][user]['password']
+#     if not plain_password.startswith('$2b$'):
+#         hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+#         config['credentials']['usernames'][user]['password'] = hashed_password.decode('utf-8')
  
 # Instantiate the authenticator
 authenticator = stauth.Authenticate(
