@@ -7,7 +7,7 @@ import os
 
 
 
-st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
+# st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
 
 
 #locale.setlocale(locale.LC_ALL, 'en_US')
@@ -40,59 +40,59 @@ query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
             where LastLoginDate is not null'
 
 #define the connection for the DBs when working on the local environment
-# conn = pyodbc.connect(
-#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         +st.secrets['server']
-#         +';DATABASE='
-#         +st.secrets['database']
-#         +';UID='
-#         +st.secrets['username']
-#         +';PWD='
-#         +st.secrets['password']
-#         ) 
+conn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        +st.secrets['server']
+        +';DATABASE='
+        +st.secrets['database']
+        +';UID='
+        +st.secrets['username']
+        +';PWD='
+        +st.secrets['password']
+        ) 
 
-# conn1 = pyodbc.connect(
-#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         +st.secrets['server1']
-#         +';DATABASE='
-#         +st.secrets['database1']
-#         +';UID='
-#         +st.secrets['username1']
-#         +';PWD='
-#         +st.secrets['password1']
-#         ) 
+conn1 = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        +st.secrets['server1']
+        +';DATABASE='
+        +st.secrets['database1']
+        +';UID='
+        +st.secrets['username1']
+        +';PWD='
+        +st.secrets['password1']
+        ) 
 
 #define the connections for the DBs when deployed to cloud
 #assign credentials for the avondw DB credentials
-server = os.environ.get('server_name')
-database = os.environ.get('db_name')
-username = os.environ.get('db_username')
-password = os.environ.get('password')
-conn = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server
-        +';DATABASE='
-        + database
-        +';UID='
-        + username
-        +';PWD='
-        + password
-        )
-#assign credentials for the avon flex DB credentials
-server1 = os.environ.get('server_name1')
-database1 = os.environ.get('db_name1')
-username1 = os.environ.get('db_username1')
-password1 = os.environ.get('password1')
-conn1 = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server1
-        +';DATABASE='
-        + database1
-        +';UID='
-        + username1
-        +';PWD='
-        + password1
-        )
+# server = os.environ.get('server_name')
+# database = os.environ.get('db_name')
+# username = os.environ.get('db_username')
+# password = os.environ.get('password')
+# conn = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server
+#         +';DATABASE='
+#         + database
+#         +';UID='
+#         + username
+#         +';PWD='
+#         + password
+#         )
+# #assign credentials for the avon flex DB credentials
+# server1 = os.environ.get('server_name1')
+# database1 = os.environ.get('db_name1')
+# username1 = os.environ.get('db_username1')
+# password1 = os.environ.get('password1')
+# conn1 = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server1
+#         +';DATABASE='
+#         + database1
+#         +';UID='
+#         + username1
+#         +';PWD='
+#         + password1
+#         )
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql():

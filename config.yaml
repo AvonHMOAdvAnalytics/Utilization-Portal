@@ -1,0 +1,24 @@
+credentials:
+  usernames:
+    admin_user_a:
+      name: Admin
+      password: ${admin_password}
+      email: ademola.atolagbe@avonhealthcare.com
+    contactcenter_user_a:
+      name: Contact Center Unit
+      password: ${contactcenter_password}
+      email: contactcenterunit@avonhealthcare.com
+    medical_services_user_a:
+      name: Medical Services Department
+      password: ${medical_services_password}
+      email: medicalservices@avonhealthcare.com
+    audit_user_a:
+      name: Internal Audit, Risk & Control
+      password: ${audit_password}
+      email: internalauditriskandcontroldept@avonhealthcare.com
+cookie:
+  name: my_app
+  key: some_random_key
+  expiry_days: 30
+preauthorized:
+  emails: []
