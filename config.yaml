@@ -10,14 +10,14 @@ credentials:
       email: contactcenterunit@avonhealthcare.com
     medical_services_user:
       name: Medical Services Department
-      password: ${medical_services_user_password}
-      email: Avon123#
+      password: Avon123#
+      email: medicalservices@avonhealthcare.com
     audit_user:
       name: Internal Audit, Risk & Control
       password: Audit123#
       email: internalauditriskandcontroldept@avonhealthcare.com
 cookie:
-  name: my_app
+  name: avonhealthcare
   key: some_random_key
   expiry_days: 30
 preauthorized:
