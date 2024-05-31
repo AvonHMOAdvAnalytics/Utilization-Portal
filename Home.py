@@ -10,27 +10,27 @@ import os
  
 st.set_page_config(page_title='PA Utilization Portal', layout='wide', initial_sidebar_state='expanded')
 
-# def load_config():
-#     with open('config.yaml') as file:
-#         config = yaml.load(file, Loader=SafeLoader)
-#     for user in config['credentials']['usernames']:
-#         password_env_var = config['credentials']['usernames'][user]['password'].strip('${}')
-#         config['credentials']['usernames'][user]['password'] = os.getenv(password_env_var)
-#     config['cookie']['key'] = os.getenv(config['cookie']['key'].strip('${}'))
-#     return config
+def load_config():
+    with open('config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+    for user in config['credentials']['usernames']:
+        password_env_var = config['credentials']['usernames'][user]['password'].strip('${}')
+        config['credentials']['usernames'][user]['password'] = os.getenv(password_env_var)
+    config['cookie']['key'] = os.getenv(config['cookie']['key'].strip('${}'))
+    return config
 
-# config = load_config()
+config = load_config()
  
-# Load configuration from YAML file
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+# # Load configuration from YAML file
+# with open('config.yaml') as file:
+#     config = yaml.load(file, Loader=SafeLoader)
 
-# Hash passwords if not already hashed
-for user in config['credentials']['usernames']:
-    plain_password = config['credentials']['usernames'][user]['password']
-    if not plain_password.startswith('$2b$'):
-        hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
-        config['credentials']['usernames'][user]['password'] = hashed_password.decode('utf-8')
+# # Hash passwords if not already hashed
+# for user in config['credentials']['usernames']:
+#     plain_password = config['credentials']['usernames'][user]['password']
+#     if not plain_password.startswith('$2b$'):
+#         hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+#         config['credentials']['usernames'][user]['password'] = hashed_password.decode('utf-8')
  
 # Instantiate the authenticator
 authenticator = stauth.Authenticate(
