@@ -11,7 +11,7 @@ import os
 st.set_page_config(page_title='PA Utilization Portal', layout='wide', initial_sidebar_state='expanded')
 
 def get_password_from_env(username):
-    env_var_name = f'{username.upper()}_password'
+    env_var_name = f'{username.upper()}_PASSWORD'
     return os.getenv(env_var_name)
  
 # # Load configuration from YAML file
