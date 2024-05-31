@@ -14,8 +14,8 @@ import os
 image = Image.open('EnrolleModule.png')
 st.image(image, use_column_width=True)
 
-st.sidebar.title('Navigation')
-options = st.sidebar.radio('Module', options=['Home Page', 'Enrollee Utilization Summary', 'Enrollee Plan Benefit Limit'])
+
+options = st.sidebar.radio('Module', options=['Enrollee Bio-Data', 'Enrollee Utilization Summary', 'Enrollee Benefit Limit'])
 
 query = 'SELECT PolicyNo\
             ,ClientName\

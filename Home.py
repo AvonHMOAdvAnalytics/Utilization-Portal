@@ -104,7 +104,7 @@ def main():
         st.session_state['username'] = None
 
     if st.session_state['authentication_status']:
-        st.title("Home Page")
+        st.title("PA Utilization Portal")
         st.write(f"You are logged in as {st.session_state['name']} ({st.session_state['username']})")
 
         #sidebar navigation
@@ -114,9 +114,9 @@ def main():
         elif st.session_state['username'].startswith("contact"):
             choice = st.sidebar.radio("Select Module", ["Enrollee Module"])
         elif st.session_state['username'].startswith("medical"):
-            choice = st.sidebar.radio("Select Module", ["Provider Module"])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Provider Module"])
         elif st.session_state['username'].startswith("audit"):
-            choice = st.sidebar.radio("Select Module", ["Client Module", "Provider Module", "Report Module"])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Client Module", "Provider Module", "Report Module"])
         else:
             st.error('Access Denied: Invalid Role.')
             return
