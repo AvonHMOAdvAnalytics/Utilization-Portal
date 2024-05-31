@@ -2,19 +2,19 @@ credentials:
   usernames:
     admin_user:
       name: Admin
-      password: ${admin_user_password}
+      password: Admin123*
       email: ademola.atolagbe@avonhealthcare.com
     contactcenter_user:
       name: Contact Center Unit
-      password: ${contactcenter_user_password}
+      password: Avon@123#
       email: contactcenterunit@avonhealthcare.com
     medical_services_user:
       name: Medical Services Department
       password: ${medical_services_user_password}
-      email: medicalservices@avonhealthcare.com
+      email: Avon123#
     audit_user:
       name: Internal Audit, Risk & Control
-      password: ${audit_user_password}
+      password: Audit123#
       email: internalauditriskandcontroldept@avonhealthcare.com
 cookie:
   name: my_app
