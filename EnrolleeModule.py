@@ -113,7 +113,6 @@ limit_df = pd.read_csv('Benefit_Limits.csv')
 st.session_state['utilization_data'] = utilization_data
 st.session_state['active_enrollees'] = active_enrollees
 
-
 memberid = st.sidebar.text_input('Enrollee Member ID')
 st.sidebar.button(label='Submit')
 
@@ -168,7 +167,7 @@ def display_member_utilization(mem_id):
     last_login_date = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Last_Login_Date'].iat[0]
 
     
-    if membername is not None and options == 'Home Page':  
+    if membername is not None and options == 'Enrollee Bio-Data':  
         #col1,col2= st.columns(2)
         st.metric(label = 'Enrollee Name', value = membername)
         st.metric(label = 'Enrollee Client', value = client)
@@ -195,7 +194,7 @@ def display_member_utilization(mem_id):
         st.dataframe(utilization_summary, use_container_width=True)
         st.subheader('Utilization details for '+ membername)
         st.dataframe(member_utilization,use_container_width=True)
-    elif options == 'Enrollee Plan Benefit Limit':
+    elif options == 'Enrollee Benefit Limit':
         enrollee_benefit_limit = limit_df.loc[
                 (limit_df['ClientName'] == client) &
                 (limit_df['ClassName'] == plan)
