@@ -5,8 +5,6 @@ from PIL import Image
 import datetime as dt
 import os
 
-
-
 # st.set_page_config(page_title= 'Enrollee Utilization',layout='wide', initial_sidebar_state='expanded')
 
 
@@ -19,8 +17,8 @@ options = st.sidebar.radio('Module', options=['Enrollee Bio-Data', 'Enrollee Uti
 
 query = 'SELECT PolicyNo\
             ,ClientName\
-            ,[Policy Inception]\
-            ,[Policy Expiry]\
+            ,Supposed_Policy_Inception as [Policy Inception]\
+            ,Supposed_Policy_Expiry as [Policy Expiry]\
             ,PlanType\
             ,MemberType\
             ,MemberNo\
@@ -32,67 +30,67 @@ query = 'SELECT PolicyNo\
             ,PrimaryProviderName\
             ,Email\
             ,MobileNo\
-             from [dbo].[tbl_MemberMasterView_stg]'
+             from [dbo].[tbl_ModifiedMemberMasterView]'
 
 query1 = 'SELECT distinct * from utilization_portal_data'
 query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
             from Users \
             where LastLoginDate is not null'
 
-# #define the connection for the DBs when working on the local environment
-# conn = pyodbc.connect(
-#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         +st.secrets['server']
-#         +';DATABASE='
-#         +st.secrets['database']
-#         +';UID='
-#         +st.secrets['username']
-#         +';PWD='
-#         +st.secrets['password']
-#         ) 
-
-# conn1 = pyodbc.connect(
-#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         +st.secrets['server1']
-#         +';DATABASE='
-#         +st.secrets['database1']
-#         +';UID='
-#         +st.secrets['username1']
-#         +';PWD='
-#         +st.secrets['password1']
-#         ) 
-
-#define the connections for the DBs when deployed to cloud
-#assign credentials for the avondw DB credentials
-server = os.environ.get('server_name')
-database = os.environ.get('db_name')
-username = os.environ.get('db_username')
-password = os.environ.get('password')
+# define the connection for the DBs when working on the local environment
 conn = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server
+        +st.secrets['server']
         +';DATABASE='
-        + database
+        +st.secrets['database']
         +';UID='
-        + username
+        +st.secrets['username']
         +';PWD='
-        + password
-        )
-#assign credentials for the avon flex DB credentials
-server1 = os.environ.get('server_name1')
-database1 = os.environ.get('db_name1')
-username1 = os.environ.get('db_username1')
-password1 = os.environ.get('password1')
+        +st.secrets['password']
+        ) 
+
 conn1 = pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server1
+        +st.secrets['server1']
         +';DATABASE='
-        + database1
+        +st.secrets['database1']
         +';UID='
-        + username1
+        +st.secrets['username1']
         +';PWD='
-        + password1
-        )
+        +st.secrets['password1']
+        ) 
+
+# #define the connections for the DBs when deployed to cloud
+# #assign credentials for the avondw DB credentials
+# server = os.environ.get('server_name')
+# database = os.environ.get('db_name')
+# username = os.environ.get('db_username')
+# password = os.environ.get('password')
+# conn = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server
+#         +';DATABASE='
+#         + database
+#         +';UID='
+#         + username
+#         +';PWD='
+#         + password
+#         )
+# #assign credentials for the avon flex DB credentials
+# server1 = os.environ.get('server_name1')
+# database1 = os.environ.get('db_name1')
+# username1 = os.environ.get('db_username1')
+# password1 = os.environ.get('password1')
+# conn1 = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server1
+#         +';DATABASE='
+#         + database1
+#         +';UID='
+#         + username1
+#         +';PWD='
+#         + password1
+#         )
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql():
@@ -174,7 +172,7 @@ def display_member_utilization(mem_id):
         st.metric(label = 'Enrollee Plan', value = plan)
         st.metric(label = 'Total Utilization Within Current Policy', value=member_pa_value)
 
-        col3, col4 = st.columns(2)
+        col3, col4 = st.columns(3)
         col3.metric(label = 'Enrollee Age', value = memberage)
         col4.metric(label = 'Member Type', value = membertype)
 
