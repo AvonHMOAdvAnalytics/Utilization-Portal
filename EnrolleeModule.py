@@ -37,7 +37,7 @@ query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
             from Users \
             where LastLoginDate is not null'
 
-# define the connection for the DBs when working on the local environment
+# # define the connection for the DBs when working on the local environment
 # conn = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
 #         +st.secrets['server']
@@ -172,7 +172,7 @@ def display_member_utilization(mem_id):
         st.metric(label = 'Enrollee Plan', value = plan)
         st.metric(label = 'Total Utilization Within Current Policy', value=member_pa_value)
 
-        col3, col4 = st.columns(3)
+        col3, col4 = st.columns(2)
         col3.metric(label = 'Enrollee Age', value = memberage)
         col4.metric(label = 'Member Type', value = membertype)
 

@@ -110,9 +110,9 @@ def main():
         #sidebar navigation
         st.sidebar.title("Navigation")
         if st.session_state['username'].startswith("admin"):
-            choice = st.sidebar.radio("Select Module", ["Enrollee After-Care Satisfaction Survey Module","Enrollee Module", "Client Module","Provider Module", 'Report Module'])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Client Module","Provider Module", 'Report Module', "Enrollee After-Care Satisfaction Survey Module"])
         elif st.session_state['username'].startswith("contact"):
-            choice = st.sidebar.radio("Select Module", ["Enrollee After-Care Satisfaction Survey Module", "Enrollee Module"])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Enrollee After-Care Satisfaction Survey Module"])
         elif st.session_state['username'].startswith("medical"):
             choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Provider Module"])
         elif st.session_state['username'].startswith("audit"):
@@ -129,10 +129,7 @@ def main():
                     module_code = file.read()
                 module_namespace = {'conn': conn, 'conn1':conn1, 'st': st, 'pd': pd, 'dt': dt}
                 exec(module_code, module_namespace)
-            if choice == "Enrollee After-Care Satisfaction Survey Module":
-                st.write("This module is currently under development.")
-                # execute_module("aftercaresurvey.py")
-            elif choice == "Enrollee Module":
+            if choice == "Enrollee Module":
                 execute_module("EnrolleeModule.py")
             elif choice == "Client Module":
                 execute_module("Client Module.py")
@@ -140,6 +137,9 @@ def main():
                 execute_module("Provider Module.py")
             elif choice == "Report Module":
                 execute_module("Report Module.py")
+            elif choice == "Enrollee After-Care Satisfaction Survey Module":
+                st.write("This module is currently under development.")
+                # execute_module("aftercaresurvey.py")
             
         except FileNotFoundError as e:
             st.error(f"Error: {e}")
