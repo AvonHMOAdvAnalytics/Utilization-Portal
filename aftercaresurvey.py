@@ -21,6 +21,8 @@ conn = pyodbc.connect(
         +st.secrets['password2']
         ) 
 
+#assign credentials for the avon flex DB credentials
+
 query = 'SELECT * from vw_tbl_AfterCareSurvey'
 
 survey_data = pd.read_sql(query, conn)

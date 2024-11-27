@@ -41,58 +41,58 @@ authenticator = stauth.Authenticate(
     config.get('preauthorized', [])
 )
  
-# Database connection
-conn = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        +st.secrets['server']
-        +';DATABASE='
-        +st.secrets['database']
-        +';UID='
-        +st.secrets['username']
-        +';PWD='
-        +st.secrets['password']
-        ) 
-
-conn1 = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        +st.secrets['server1']
-        +';DATABASE='
-        +st.secrets['database1']
-        +';UID='
-        +st.secrets['username1']
-        +';PWD='
-        +st.secrets['password1']
-        ) 
-
-# server = os.environ.get('server_name')
-# database = os.environ.get('db_name')
-# username = os.environ.get('db_username')
-# password = os.environ.get('password')
+# # Database connection
 # conn = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         + server
+#         +st.secrets['server']
 #         +';DATABASE='
-#         + database
+#         +st.secrets['database']
 #         +';UID='
-#         + username
+#         +st.secrets['username']
 #         +';PWD='
-#         + password
-#         )
-# #assign credentials for the avon flex DB credentials
-# server1 = os.environ.get('server_name1')
-# database1 = os.environ.get('db_name1')
-# username1 = os.environ.get('db_username1')
-# password1 = os.environ.get('password1')
+#         +st.secrets['password']
+#         ) 
+
 # conn1 = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         + server1
+#         +st.secrets['server1']
 #         +';DATABASE='
-#         + database1
+#         +st.secrets['database1']
 #         +';UID='
-#         + username1
+#         +st.secrets['username1']
 #         +';PWD='
-#         + password1
-#         )
+#         +st.secrets['password1']
+#         ) 
+
+server = os.environ.get('server_name')
+database = os.environ.get('db_name')
+username = os.environ.get('db_username')
+password = os.environ.get('password')
+conn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        + server
+        +';DATABASE='
+        + database
+        +';UID='
+        + username
+        +';PWD='
+        + password
+        )
+#assign credentials for the avon flex DB credentials
+server1 = os.environ.get('server_name1')
+database1 = os.environ.get('db_name1')
+username1 = os.environ.get('db_username1')
+password1 = os.environ.get('password1')
+conn1 = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        + server1
+        +';DATABASE='
+        + database1
+        +';UID='
+        + username1
+        +';PWD='
+        + password1
+        )
 
 def main():
     # Initialize session state variables if they don't exist        
@@ -130,7 +130,8 @@ def main():
                 module_namespace = {'conn': conn, 'conn1':conn1, 'st': st, 'pd': pd, 'dt': dt}
                 exec(module_code, module_namespace)
             if choice == "Enrollee After-Care Satisfaction Survey Module":
-                execute_module("aftercaresurvey.py")
+                st.write("This module is currently under development.")
+                # execute_module("aftercaresurvey.py")
             elif choice == "Enrollee Module":
                 execute_module("EnrolleeModule.py")
             elif choice == "Client Module":
