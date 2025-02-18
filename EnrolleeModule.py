@@ -36,8 +36,11 @@ query1 = 'SELECT distinct * from utilization_portal_data'
 query2 = 'select distinct LoginMemberNo, DateCreated,  LastLoginDate, IsActive\
             from Users \
             where LastLoginDate is not null'
+query3 = 'select PolicyNo, PlanType, CancerCareLimit, GlassesLimit, MaternityLimit,OpticalCareLimit, DentalCareLimit,\
+            SurgeryLimit, TotalLimit, FromDate, ToDate\
+            from tblBenefitLimit'
 
-# # define the connection for the DBs when working on the local environment
+# define the connection for the DBs when working on the local environment
 # conn = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
 #         +st.secrets['server']
@@ -97,16 +100,21 @@ def get_data_from_sql():
     active_enrolees = pd.read_sql(query, conn)
     utilization_data = pd.read_sql(query1, conn)
     app_data = pd.read_sql(query2, conn1)
+    limit_df = pd.read_sql(query3, conn)
     conn.close()
-    return active_enrolees, utilization_data, app_data
+    return active_enrolees, utilization_data, app_data, limit_df
 
-active_enrollees, utilization_data, app_data  = get_data_from_sql()
+active_enrollees, utilization_data, app_data, limit_df  = get_data_from_sql()
 
 utilization_data['PAIssueDate'] = pd.to_datetime(utilization_data['PAIssueDate']).dt.date
 
+utilization_data['MemberNo'] = utilization_data['MemberNo'].astype(str)
+
+active_enrollees['MemberNo'] = active_enrollees['MemberNo'].astype(str)
+
 # active_enrollees, utilization_data = get_data_from_sql()
 
-limit_df = pd.read_csv('Benefit_Limits.csv')
+# limit_df = pd.read_csv('Benefit_Limits.csv')
 
 st.session_state['utilization_data'] = utilization_data
 st.session_state['active_enrollees'] = active_enrollees
@@ -114,13 +122,25 @@ st.session_state['active_enrollees'] = active_enrollees
 memberid = st.sidebar.text_input('Enrollee Member ID')
 st.sidebar.button(label='Submit')
 
+ # Helper function to format limits and utilization values
+def format_value(value):
+    if pd.notna(value):  # Check for non-NaN values
+        return '#' + '{:,}'.format(int(value))
+    return None
+
+# Helper function to calculate utilization and filter relevant rows
+def filter_utilization(member_utilization, benefit_keywords, service_keywords):
+    return member_utilization.loc[
+        member_utilization['Benefit'].str.contains('|'.join(benefit_keywords), case=False, na=False) |
+        member_utilization['ServiceDescription'].str.contains('|'.join(service_keywords), case=False, na=False)
+    ]
 
 def display_member_utilization(mem_id):   
     if not mem_id.isdigit():
         st.write('Enter a valid MemberNo')
         return 
-  
-    mem_id = int(mem_id)
+    policyno = active_enrollees.loc[active_enrollees['MemberNo'] == memberid, 'PolicyNo'].iat[0]
+    # mem_id = int(mem_id)
 
     if mem_id not in active_enrollees['MemberNo'].values:
         st.write('No data found for the given member number')
@@ -129,13 +149,14 @@ def display_member_utilization(mem_id):
     policy_start_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Inception'].iat[0])
     policy_end_date = pd.to_datetime(active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Policy Expiry'].iat[0])
 
+
     member_pa_value = utilization_data.loc[
             (utilization_data['MemberNo'] == mem_id) &
             (utilization_data['PAIssueDate'] >= policy_start_date) &
             (utilization_data['PAIssueDate'] <= policy_end_date) &
             (utilization_data['New Approval Status'] == 'APPROVED'),
             'ApprovedPAAmount'].sum() 
-    member_pa_value = '#' + '{:,}'.format(member_pa_value)       
+    member_pa_value = '#' + '{:,}'.format(int(member_pa_value))       
     #member_pa_value = '#' + locale.format_string('%d', member_pa_value, grouping=True)
     membername = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'Name'].iat[0]
     client = active_enrollees.loc[active_enrollees['MemberNo'] == mem_id, 'ClientName'].iat[0]
@@ -194,15 +215,86 @@ def display_member_utilization(mem_id):
         st.dataframe(member_utilization,use_container_width=True)
     elif options == 'Enrollee Benefit Limit':
         enrollee_benefit_limit = limit_df.loc[
-                (limit_df['ClientName'] == client) &
-                (limit_df['ClassName'] == plan)
+                (limit_df['PolicyNo'] == policyno) &
+                (limit_df['PlanType'] == plan)
             ]
-        null_cols = enrollee_benefit_limit.columns[enrollee_benefit_limit.isnull().all()]
-        enrollee_benefit_limit.drop(null_cols, axis = 1, inplace = True)
-        enrollee_benefit_limit = enrollee_benefit_limit.iloc[:, 6:].reset_index(drop=True)
-        enrollee_benefit_limit = enrollee_benefit_limit.to_dict('index')
+
+        # Extract and format benefit limits
+        limits = {
+            "Cancer Care": format_value(enrollee_benefit_limit['CancerCareLimit'].iat[0]),
+            "Glasses": format_value(enrollee_benefit_limit['GlassesLimit'].iat[0]),
+            "Maternity": format_value(enrollee_benefit_limit['MaternityLimit'].iat[0]),
+            "Optical Care": format_value(enrollee_benefit_limit['OpticalCareLimit'].iat[0]),
+            "Dental Care": format_value(enrollee_benefit_limit['DentalCareLimit'].iat[0]),
+            "Surgery": format_value(enrollee_benefit_limit['SurgeryLimit'].iat[0]),
+            "Total Limit": format_value(enrollee_benefit_limit['TotalLimit'].iat[0])
+        }
+
+        # Define keywords for each benefit category
+        benefit_keywords = {
+            "Cancer Care": ["Cancer"],
+            "Glasses": ["Glasses"],
+            "Maternity": ["Maternity"],
+            "Optical Care": ["Optic"],
+            "Dental Care": ["Dental"],
+            "Surgery": ["Surger"]
+        }
+
+        service_keywords = {
+            "Cancer Care": ["Cancer"],
+            "Glasses": ["Glasses"],
+            "Maternity": ["Antenatal"],
+            "Optical Care": ["Optical"],
+            "Dental Care": ["Scaling"],
+            "Surgery": ["Caesarian", "Appendectomy", "Hysterectomy", "Mastectomy", "C/S", "Laparotomy", "Hemorrhoidectomy", "Herniorrhaphy", "Thyroidectomy", "Cholecystectomy", "Laparoscopy"]
+        }
+
+        #prepare and display metrics with granular details
+        used_rows = pd.DataFrame()
+
+        # Prepare and display metrics with granular details
+        for benefit, keywords in benefit_keywords.items():
+            # Filter and calculate utilization
+            benefit_data = filter_utilization(member_utilization, keywords, service_keywords[benefit])
+            benefit_utilization = benefit_data['ApprovedPAAmount'].sum()
+            utilization_formatted = format_value(benefit_utilization)
+            limit = limits[benefit]
+
+            if limit is not None:
+                st.metric(label=benefit, value=f"{utilization_formatted}/{limit}")
+
+                # Add granular details in an expander
+                with st.expander(f"View Utilization Details for {benefit}"):
+                    if not benefit_data.empty:
+                        st.dataframe(benefit_data[['PAIssueDate', 'ServiceDescription', 'ApprovedPAAmount']])
+                        #Add benefit data to used rows to avoid duplication
+                        used_rows = pd.concat([used_rows, benefit_data])
+                    else:
+                        st.write("No utilization details available for this benefit.")
+
+        #Calculate the remaining utilization rows not categorised under any benefit
+        remaining_data = member_utilization.loc[~member_utilization.index.isin(used_rows.index)]
+        remaining_utilization = remaining_data['ApprovedPAAmount'].sum()
+        remaining_formatted = format_value(remaining_utilization)
+
+        # Display total limit
+        if limits["Total Limit"] is not None:
+            st.metric(label="Total Limit", value=f"{member_pa_value}/{limits['Total Limit']}")
+            #add granular details for the remaining utilization
+            with st.expander('View details for all other Utilization'):
+                if not remaining_data.empty:
+                    st.dataframe(remaining_data[['PAIssueDate', 'ServiceDescription', 'ApprovedPAAmount']])
+                else:
+                    st.write("No additional utilization details available.")
+
+
+        # st.write(enrollee_benefit_limit)
+        # null_cols = enrollee_benefit_limit.columns[enrollee_benefit_limit.isnull().all()]
+        # enrollee_benefit_limit.drop(null_cols, axis = 1, inplace = True)
+        # # enrollee_benefit_limit = enrollee_benefit_limit.iloc[:, 6:].reset_index(drop=True)
+        # enrollee_benefit_limit = enrollee_benefit_limit.to_dict('index')
         
-        st.write(enrollee_benefit_limit)
+        # st.write(enrollee_benefit_limit)
         return
 
 display_member_utilization(memberid)

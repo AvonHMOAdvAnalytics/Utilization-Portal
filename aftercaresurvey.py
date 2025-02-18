@@ -37,6 +37,11 @@ date = st.sidebar.date_input('Pick a PAIssue Date')
 st.subheader(f'Approved Encounters for {date}')
 encounter = survey_data[survey_data['PAIssueDate'] == date]
 encounter = encounter[['MemberNo', 'MemberName', 'AvonPaCode', 'ProviderName', 'ServiceDescription', 'MobileNo']].reset_index(drop=True)
+# Replace None or NaN with an empty string
+encounter['ServiceDescription'] = encounter['ServiceDescription'].fillna('')
+
+#aggregate the encounters based on the MemberNo and concatenate the ServiceDescription seperated by comma
+encounter = encounter.groupby('MemberNo').agg({'MemberName': 'first', 'ProviderName': 'first', 'MobileNo': 'first', 'ServiceDescription': ', '.join}).reset_index()
 #display the distinct encounters for the selected date in a select box
 st.write(encounter)
 encounter = encounter['MemberNo'].unique()
@@ -44,11 +49,13 @@ selected_encounter = st.selectbox('Select MemberNo', encounter)
 
 #retrieve the following details for the selected encounter, MemberNo, MemberName, PAIssueDate, ProviderName, ServiceDescription, MobileNo, FinalApprovalStatus
 encounter_details = survey_data[(survey_data['PAIssueDate'] == date) & (survey_data['MemberNo'] == selected_encounter)]
+
 sel_memberno = encounter_details['MemberNo'].values[0]
 sel_membername = encounter_details['MemberName'].values[0]
 sel_providername = encounter_details['ProviderName'].values[0] 
 #the service description has multiple rows, so we will concatenate them
-sel_servicedescription = ', '.join(encounter_details['ServiceDescription'].values)
+# Concatenate service descriptions
+sel_servicedescription = ', '.join(encounter_details['ServiceDescription'].astype(str).values)
 sel_mobileno = encounter_details['MobileNo'].values[0]
 
 #display the details using the metric

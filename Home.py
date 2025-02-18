@@ -110,9 +110,10 @@ def main():
         #sidebar navigation
         st.sidebar.title("Navigation")
         if st.session_state['username'].startswith("admin"):
-            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Client Module","Provider Module", 'Report Module', "Enrollee After-Care Satisfaction Survey Module"])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Client Module","Provider Module", 'Report Module',
+                                                         "Enrollee After-Care Satisfaction Survey Module", "Referral Module"])
         elif st.session_state['username'].startswith("contact"):
-            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Enrollee After-Care Satisfaction Survey Module"])
+            choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Referral Module", "Enrollee After-Care Satisfaction Survey Module"])
         elif st.session_state['username'].startswith("medical"):
             choice = st.sidebar.radio("Select Module", ["Enrollee Module", "Provider Module"])
         elif st.session_state['username'].startswith("audit"):
@@ -131,6 +132,8 @@ def main():
                 exec(module_code, module_namespace)
             if choice == "Enrollee Module":
                 execute_module("EnrolleeModule.py")
+            elif choice == "Referral Module":
+                execute_module("Referral Module.py")
             elif choice == "Client Module":
                 execute_module("Client Module.py")
             elif choice == "Provider Module":
@@ -138,7 +141,7 @@ def main():
             elif choice == "Report Module":
                 execute_module("Report Module.py")
             elif choice == "Enrollee After-Care Satisfaction Survey Module":
-                st.write("This module is currently under development.")
+                st.info("This module is under development.")
                 # execute_module("aftercaresurvey.py")
             
         except FileNotFoundError as e:
