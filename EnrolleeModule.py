@@ -40,7 +40,7 @@ query3 = 'select PolicyNo, PlanType, CancerCareLimit, GlassesLimit, MaternityLim
             SurgeryLimit, TotalLimit, FromDate, ToDate\
             from tblBenefitLimit'
 
-# define the connection for the DBs when working on the local environment
+# # define the connection for the DBs when working on the local environment
 # conn = pyodbc.connect(
 #         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
 #         +st.secrets['server']
